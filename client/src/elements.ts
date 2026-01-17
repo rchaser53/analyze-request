@@ -19,7 +19,7 @@ export const getElements = (): Elements => {
     contentType: getById<HTMLElement>('contentType'),
     respHeaders: getById<HTMLTextAreaElement>('respHeaders'),
     respBodyText: getById<HTMLTextAreaElement>('respBodyText'),
-    respBodyJson: getById<HTMLTextAreaElement>('respBodyJson'),
+    respBodyJson: getById<HTMLDivElement>('respBodyJson'),
     respError: getById<HTMLElement>('respError'),
   };
 };

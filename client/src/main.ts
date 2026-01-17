@@ -5,6 +5,7 @@ import { getElements } from './elements';
 import { tryParseJsonObject, prettyJson } from './json';
 import { postProxyRequest } from './api';
 import { setupTabs } from './tabs';
+import { renderResponseIncrementally } from './render';
 import type { ApiProxyRequestBody, Elements } from './types';
 
 const setError = (target: HTMLElement, message: string): void => {
@@ -17,7 +18,7 @@ const clearResponse = (el: Elements): void => {
   el.contentType.textContent = '-';
   el.respHeaders.value = '';
   el.respBodyText.value = '';
-  el.respBodyJson.value = '';
+  el.respBodyJson.textContent = '';
 };
 
 const applyDefaults = (el: Elements): void => {
@@ -75,6 +76,14 @@ const sendRequest = async (el: Elements): Promise<void> => {
   el.send.disabled = true;
   el.send.textContent = 'Sending...';
 
+  // 送信中に段階表示が分かるよう、まずはプレースホルダを入れておく
+  el.status.textContent = '...';
+  el.time.textContent = '...';
+  el.contentType.textContent = '...';
+  el.respHeaders.value = '';
+  el.respBodyText.value = '';
+  el.respBodyJson.textContent = '';
+
   try {
     const result = await postProxyRequest(body);
 
@@ -84,13 +93,7 @@ const sendRequest = async (el: Elements): Promise<void> => {
       return;
     }
 
-    el.status.textContent = `${result.status} ${result.statusText}`;
-    el.time.textContent = `${result.durationMs} ms`;
-    el.contentType.textContent = result.contentType || '-';
-
-    el.respHeaders.value = prettyJson(result.headers);
-    el.respBodyText.value = result.bodyText ?? '';
-    el.respBodyJson.value = result.bodyJson ? prettyJson(result.bodyJson) : '';
+    await renderResponseIncrementally(el, result);
   } catch (e: unknown) {
     const message: string = e instanceof Error ? e.message : String(e);
     setError(el.respError, message);

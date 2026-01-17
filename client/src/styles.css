@@ -237,6 +237,89 @@ button:disabled {
   display: none;
 }
 
+/* JSONツリー表示（Chrome DevTools風の掘り下げ） */
+.tree {
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.25);
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    "Courier New",
+    monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  max-height: 360px;
+  overflow: auto;
+}
+
+.tree-node {
+  padding-left: 2px;
+}
+
+.tree-summary {
+  cursor: pointer;
+  user-select: none;
+}
+
+.tree-children {
+  margin-top: 6px;
+  padding-left: 14px;
+  border-left: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+.tree-row {
+  padding: 2px 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tree-key {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.tree-sep {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.tree-preview {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.tree-value {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.tree-string {
+  color: #a7f3d0;
+}
+
+.tree-number {
+  color: #93c5fd;
+}
+
+.tree-boolean {
+  color: #fca5a5;
+}
+
+.tree-null {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.tree-unknown {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.tree-empty {
+  color: rgba(255, 255, 255, 0.55);
+}
+
 .footer {
   max-width: 1200px;
   margin: 0 auto;

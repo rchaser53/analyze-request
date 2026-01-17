@@ -16,7 +16,7 @@ export type Elements = {
   contentType: HTMLElement;
   respHeaders: HTMLTextAreaElement;
   respBodyText: HTMLTextAreaElement;
-  respBodyJson: HTMLTextAreaElement;
+  respBodyJson: HTMLDivElement;
   respError: HTMLElement;
 };
 
