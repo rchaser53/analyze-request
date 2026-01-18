@@ -83,6 +83,32 @@ export const setupSavedRequestsUi = (args: {
       return;
     }
 
+    // 選択が無い場合でも、同名があれば上書き候補にする
+    const existingSameName = listSavedRequests().find((it) => it.name === name) ?? null;
+    if (existingSameName) {
+      const ok: boolean = window.confirm(
+        `同名の保存「${existingSameName.name}」が存在します。上書き更新しますか？\nキャンセルで新規保存します。`,
+      );
+
+      if (ok) {
+        const updated = updateSavedRequest({
+          id: existingSameName.id,
+          name,
+          description,
+          request: req,
+        });
+
+        if (!updated) {
+          setError(el.savedError, '上書き更新に失敗しました');
+          return;
+        }
+
+        rebuildSelect(el, updated.id);
+        updateSaveButtonLabel(el);
+        return;
+      }
+    }
+
     const saved = saveNewRequest({ name, description, request: req });
     rebuildSelect(el, saved.id);
     updateSaveButtonLabel(el);
