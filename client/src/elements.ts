@@ -11,6 +11,15 @@ export const getElements = (): Elements => {
     timeoutMs: getById<HTMLInputElement>('timeoutMs'),
     send: getById<HTMLButtonElement>('send'),
     clear: getById<HTMLButtonElement>('clear'),
+
+    saveName: getById<HTMLInputElement>('saveName'),
+    saveDescription: getById<HTMLTextAreaElement>('saveDescription'),
+    saveRequest: getById<HTMLButtonElement>('saveRequest'),
+    savedSelect: getById<HTMLSelectElement>('savedSelect'),
+    loadSaved: getById<HTMLButtonElement>('loadSaved'),
+    deleteSaved: getById<HTMLButtonElement>('deleteSaved'),
+    savedError: getById<HTMLElement>('savedError'),
+
     curl: getById<HTMLElement>('curl'),
     reqError: getById<HTMLElement>('reqError'),
 

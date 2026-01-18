@@ -8,6 +8,15 @@ export type Elements = {
   timeoutMs: HTMLInputElement;
   send: HTMLButtonElement;
   clear: HTMLButtonElement;
+
+  saveName: HTMLInputElement;
+  saveDescription: HTMLTextAreaElement;
+  saveRequest: HTMLButtonElement;
+  savedSelect: HTMLSelectElement;
+  loadSaved: HTMLButtonElement;
+  deleteSaved: HTMLButtonElement;
+  savedError: HTMLElement;
+
   curl: HTMLElement;
   reqError: HTMLElement;
 

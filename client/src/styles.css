@@ -85,6 +85,12 @@ h1 {
   color: rgba(255, 255, 255, 0.9);
 }
 
+.subhead {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.86);
+}
+
 label {
   display: block;
   font-size: 12px;
@@ -156,6 +162,15 @@ button.ghost:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 
+button.danger {
+  border-color: rgba(239, 68, 68, 0.55);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+button.danger:hover {
+  background: rgba(239, 68, 68, 0.18);
+}
+
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -196,6 +211,12 @@ button:disabled {
   margin-top: 10px;
   border-top: 1px solid var(--border);
   padding-top: 10px;
+}
+
+.saved {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
 }
 
 .mono {

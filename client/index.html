@@ -59,6 +59,36 @@
           <button id="clear" class="ghost">Clear</button>
         </div>
 
+        <div class="saved">
+          <h3 class="subhead">Saved</h3>
+
+          <div class="row">
+            <label class="grow">
+              保存名
+              <input id="saveName" type="text" placeholder="例: httpbin GET" />
+            </label>
+
+            <button id="saveRequest" class="ghost">Save</button>
+          </div>
+
+          <label>
+            説明
+            <textarea id="saveDescription" spellcheck="false" rows="2" placeholder="任意。例: 疎通確認用"></textarea>
+          </label>
+
+          <div class="row">
+            <label class="grow">
+              保存一覧
+              <select id="savedSelect"></select>
+            </label>
+
+            <button id="loadSaved" class="ghost">Load</button>
+            <button id="deleteSaved" class="danger">Delete</button>
+          </div>
+
+          <p id="savedError" class="error"></p>
+        </div>
+
         <details class="details">
           <summary>cURL</summary>
           <pre id="curl" class="mono"></pre>

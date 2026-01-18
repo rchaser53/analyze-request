@@ -6,6 +6,7 @@ import { tryParseJsonObject, prettyJson } from './json';
 import { postProxyRequest } from './api';
 import { setupTabs } from './tabs';
 import { renderResponseIncrementally } from './render';
+import { setupSavedRequestsUi } from './savedRequestsUi';
 import type { ApiProxyRequestBody, Elements } from './types';
 
 const setError = (target: HTMLElement, message: string): void => {
@@ -28,10 +29,25 @@ const applyDefaults = (el: Elements): void => {
   el.body.value = '';
   el.timeoutMs.value = '15000';
 
+  el.saveName.value = '';
+  el.saveDescription.value = '';
+  setError(el.savedError, '');
+
   setError(el.reqError, '');
   setError(el.respError, '');
   el.curl.textContent = '';
   clearResponse(el);
+};
+
+const applyRequestToForm = (el: Elements, req: ApiProxyRequestBody): void => {
+  el.url.value = req.url;
+  el.method.value = req.method;
+  el.headers.value = prettyJson(req.headers);
+  el.body.value = req.body;
+  el.timeoutMs.value = String(req.timeoutMs || 15000);
+
+  setError(el.reqError, '');
+  updateCurl(el, req);
 };
 
 const buildRequestBody = (el: Elements): ApiProxyRequestBody | null => {
@@ -108,6 +124,14 @@ const main = (): void => {
 
   const el: Elements = getElements();
   applyDefaults(el);
+
+  setupSavedRequestsUi({
+    el,
+    getCurrentRequest: (): ApiProxyRequestBody | null => buildRequestBody(el),
+    applyRequestToForm: (req: ApiProxyRequestBody): void => {
+      applyRequestToForm(el, req);
+    },
+  });
 
   el.send.addEventListener('click', () => {
     void sendRequest(el);
