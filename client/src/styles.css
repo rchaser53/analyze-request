@@ -219,6 +219,58 @@ button:disabled {
   padding-top: 12px;
 }
 
+.savedTableWrap {
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  max-height: 220px;
+  overflow: auto;
+}
+
+.savedTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.savedTable th,
+.savedTable td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  vertical-align: top;
+}
+
+.savedTable th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.savedRow {
+  cursor: pointer;
+}
+
+.savedRow:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.savedRow.isSelected {
+  background: rgba(124, 58, 237, 0.18);
+}
+
+.savedRow:focus {
+  outline: 2px solid rgba(124, 58, 237, 0.55);
+  outline-offset: -2px;
+}
+
+.savedTableEmpty td {
+  color: rgba(255, 255, 255, 0.65);
+}
+
 .mono {
   font-family:
     ui-monospace,

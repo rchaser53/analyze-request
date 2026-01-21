@@ -13,6 +13,8 @@ export type Elements = {
   saveDescription: HTMLTextAreaElement;
   saveRequest: HTMLButtonElement;
   savedSelect: HTMLSelectElement;
+  savedTable: HTMLTableElement;
+  savedTableBody: HTMLTableSectionElement;
   loadSaved: HTMLButtonElement;
   deleteSaved: HTMLButtonElement;
   savedError: HTMLElement;

@@ -16,6 +16,8 @@ export const getElements = (): Elements => {
     saveDescription: getById<HTMLTextAreaElement>('saveDescription'),
     saveRequest: getById<HTMLButtonElement>('saveRequest'),
     savedSelect: getById<HTMLSelectElement>('savedSelect'),
+    savedTable: getById<HTMLTableElement>('savedTable'),
+    savedTableBody: getById<HTMLTableSectionElement>('savedTableBody'),
     loadSaved: getById<HTMLButtonElement>('loadSaved'),
     deleteSaved: getById<HTMLButtonElement>('deleteSaved'),
     savedError: getById<HTMLElement>('savedError'),

@@ -79,7 +79,21 @@
           <div class="row">
             <label class="grow">
               保存一覧
-              <select id="savedSelect"></select>
+              <!-- 状態保持・既存ロジック互換のため select は残す（UIとしては非表示） -->
+              <select id="savedSelect" class="hidden" aria-hidden="true" tabindex="-1"></select>
+
+              <div class="savedTableWrap" role="group" aria-label="保存一覧">
+                <table id="savedTable" class="savedTable" role="grid" aria-label="保存一覧テーブル">
+                  <thead>
+                    <tr>
+                      <th scope="col">名前</th>
+                      <th scope="col">説明</th>
+                      <th scope="col">最終レスポンス</th>
+                    </tr>
+                  </thead>
+                  <tbody id="savedTableBody"></tbody>
+                </table>
+              </div>
             </label>
 
             <button id="loadSaved" class="ghost">Load</button>

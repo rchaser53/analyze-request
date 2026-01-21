@@ -1,6 +1,7 @@
 import { deleteSavedRequest, getSavedRequestById, listSavedRequests, saveNewRequest, updateSavedRequest } from './savedRequests';
 import type { ApiResult } from './api';
 import type { ApiProxyRequestBody, Elements } from './types';
+import type { SavedRequest } from './savedRequests';
 
 const setError = (target: HTMLElement, message: string): void => {
   target.textContent = message;
@@ -19,9 +20,7 @@ const formatLastResponseLabel = (iso: string): string => {
   });
 };
 
-const rebuildSelect = (el: Elements, selectedId: string | null): void => {
-  const items = listSavedRequests();
-
+const rebuildSelect = (el: Elements, items: SavedRequest[], selectedId: string | null): void => {
   el.savedSelect.innerHTML = '';
 
   const placeholder: HTMLOptionElement = document.createElement('option');
@@ -46,6 +45,53 @@ const rebuildSelect = (el: Elements, selectedId: string | null): void => {
   }
 };
 
+const rebuildTable = (el: Elements, items: SavedRequest[], selectedId: string | null): void => {
+  el.savedTableBody.innerHTML = '';
+
+  if (items.length === 0) {
+    const tr: HTMLTableRowElement = document.createElement('tr');
+    tr.className = 'savedTableEmpty';
+
+    const td: HTMLTableCellElement = document.createElement('td');
+    td.colSpan = 3;
+    td.textContent = '（保存されたリクエストはありません）';
+    tr.appendChild(td);
+    el.savedTableBody.appendChild(tr);
+    return;
+  }
+
+  for (const item of items) {
+    const tr: HTMLTableRowElement = document.createElement('tr');
+    tr.dataset.savedId = item.id;
+    tr.tabIndex = 0;
+    tr.className = item.id === selectedId ? 'savedRow isSelected' : 'savedRow';
+
+    const tdName: HTMLTableCellElement = document.createElement('td');
+    tdName.textContent = item.name;
+
+    const tdDesc: HTMLTableCellElement = document.createElement('td');
+    tdDesc.textContent = item.description;
+
+    const tdLast: HTMLTableCellElement = document.createElement('td');
+    const lastIso: string = item.lastResponse?.savedAtIso ?? '';
+    tdLast.textContent = lastIso ? formatLastResponseLabel(lastIso) : '';
+
+    tr.appendChild(tdName);
+    tr.appendChild(tdDesc);
+    tr.appendChild(tdLast);
+    el.savedTableBody.appendChild(tr);
+  }
+};
+
+const updateTableSelection = (el: Elements, selectedId: string | null): void => {
+  const rows: NodeListOf<HTMLTableRowElement> = el.savedTableBody.querySelectorAll<HTMLTableRowElement>('tr[data-saved-id]');
+  rows.forEach((row: HTMLTableRowElement): void => {
+    const id: string = row.dataset.savedId ?? '';
+    const isSelected: boolean = Boolean(selectedId) && id === selectedId;
+    row.classList.toggle('isSelected', isSelected);
+  });
+};
+
 const updateSaveButtonLabel = (el: Elements): void => {
   const hasSelection: boolean = Boolean(el.savedSelect.value);
   el.saveRequest.textContent = hasSelection ? 'Update' : 'Save';
@@ -60,8 +106,64 @@ export const setupSavedRequestsUi = (args: {
 }): void => {
   const { el, getCurrentRequest, getCurrentResponse, applyRequestToForm, applyResponseToView } = args;
 
-  rebuildSelect(el, null);
+  const refreshList = (selectedId: string | null): void => {
+    const items: SavedRequest[] = listSavedRequests();
+    rebuildSelect(el, items, selectedId);
+    rebuildTable(el, items, selectedId);
+    updateTableSelection(el, selectedId);
+  };
+
+  const applySelection = (id: string | null): void => {
+    setError(el.savedError, '');
+
+    el.savedSelect.value = id ?? '';
+    updateSaveButtonLabel(el);
+    updateTableSelection(el, id);
+
+    if (!id) return;
+
+    const saved = getSavedRequestById(id);
+    if (!saved) return;
+
+    el.saveName.value = saved.name;
+    el.saveDescription.value = saved.description;
+
+    // 選択時にも保存済みレスポンスをプレビュー表示
+    applyResponseToView(saved.lastResponse);
+  };
+
+  refreshList(null);
   updateSaveButtonLabel(el);
+
+  // テーブルの行クリックで選択する
+  el.savedTableBody.addEventListener('click', (ev: MouseEvent) => {
+    const target: EventTarget | null = ev.target;
+    if (!(target instanceof HTMLElement)) return;
+
+    const row: HTMLTableRowElement | null = target.closest<HTMLTableRowElement>('tr[data-saved-id]');
+    if (!row) return;
+
+    const id: string = row.dataset.savedId ?? '';
+    if (!id) return;
+    applySelection(id);
+  });
+
+  // Enter/Spaceでも選択できるようにする
+  el.savedTableBody.addEventListener('keydown', (ev: KeyboardEvent) => {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+
+    const target: EventTarget | null = ev.target;
+    if (!(target instanceof HTMLElement)) return;
+
+    const row: HTMLTableRowElement | null = target.closest<HTMLTableRowElement>('tr[data-saved-id]');
+    if (!row) return;
+
+    const id: string = row.dataset.savedId ?? '';
+    if (!id) return;
+
+    ev.preventDefault();
+    applySelection(id);
+  });
 
   el.saveRequest.addEventListener('click', () => {
     setError(el.savedError, '');
@@ -101,7 +203,7 @@ export const setupSavedRequestsUi = (args: {
         return;
       }
 
-      rebuildSelect(el, updated.id);
+      refreshList(updated.id);
       updateSaveButtonLabel(el);
       return;
     }
@@ -127,14 +229,14 @@ export const setupSavedRequestsUi = (args: {
           return;
         }
 
-        rebuildSelect(el, updated.id);
+        refreshList(updated.id);
         updateSaveButtonLabel(el);
         return;
       }
     }
 
     const saved = saveNewRequest({ name, description, request: req, lastResponse: res });
-    rebuildSelect(el, saved.id);
+    refreshList(saved.id);
     updateSaveButtonLabel(el);
   });
 
@@ -150,7 +252,7 @@ export const setupSavedRequestsUi = (args: {
     const saved = getSavedRequestById(id);
     if (!saved) {
       setError(el.savedError, '選択されたリクエストが見つかりません（再読み込みしてください）');
-      rebuildSelect(el, null);
+      refreshList(null);
       return;
     }
 
@@ -158,8 +260,7 @@ export const setupSavedRequestsUi = (args: {
     el.saveName.value = saved.name;
     el.saveDescription.value = saved.description;
 
-    el.savedSelect.value = saved.id;
-    updateSaveButtonLabel(el);
+    applySelection(saved.id);
 
     applyRequestToForm(saved.request);
 
@@ -179,7 +280,7 @@ export const setupSavedRequestsUi = (args: {
     const saved = getSavedRequestById(id);
     if (!saved) {
       setError(el.savedError, '選択されたリクエストが見つかりません');
-      rebuildSelect(el, null);
+      refreshList(null);
       return;
     }
 
@@ -187,24 +288,13 @@ export const setupSavedRequestsUi = (args: {
     if (!ok) return;
 
     deleteSavedRequest(id);
-    rebuildSelect(el, null);
+    refreshList(null);
     updateSaveButtonLabel(el);
   });
 
   el.savedSelect.addEventListener('change', () => {
-    setError(el.savedError, '');
-    updateSaveButtonLabel(el);
-
+    // select は非表示だが、互換性のため change は残す
     const id: string = el.savedSelect.value;
-    if (!id) return;
-
-    const saved = getSavedRequestById(id);
-    if (!saved) return;
-
-    el.saveName.value = saved.name;
-    el.saveDescription.value = saved.description;
-
-    // 選択時にも保存済みレスポンスをプレビュー表示
-    applyResponseToView(saved.lastResponse);
+    applySelection(id || null);
   });
 };
